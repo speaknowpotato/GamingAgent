@@ -1,0 +1,30 @@
+[Thread 14 - SHORT] Python code to be executed:
+import pyautogui
+import time
+
+# Mario is at the start of World 1-1 with some Goombas ahead
+# Need to move forward and jump over the Goombas and pipes
+
+# Move right to advance
+pyautogui.keyDown('right')
+time.sleep(0.3)
+
+# Jump over the first Goomba
+pyautogui.keyDown('x')
+time.sleep(0.3)
+pyautogui.keyUp('x')
+time.sleep(0.2)
+
+# Continue moving right toward the pipe
+time.sleep(0.2)
+
+# Jump over the pipe
+pyautogui.keyDown('x')
+time.sleep(0.4)  # Longer jump for the pipe
+pyautogui.keyUp('x')
+
+# Continue moving right
+time.sleep(0.1)
+pyautogui.keyUp('right')
+
+

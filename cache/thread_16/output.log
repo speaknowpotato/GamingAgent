@@ -1,0 +1,26 @@
+[Thread 16 - SHORT] Python code to be executed:
+import pyautogui
+import time
+
+# Mario is jumping over a pipe with Goomba enemies on the ground
+# Need to continue the jump and prepare for landing
+
+# Continue holding jump button while moving right to clear the pipe
+pyautogui.keyDown('x')
+pyautogui.keyDown('right')
+time.sleep(0.3)
+
+# Release jump but keep moving right to continue forward
+pyautogui.keyUp('x')
+time.sleep(0.3)
+
+# Prepare for another jump to avoid the Goomba on the right
+pyautogui.keyDown('x')
+time.sleep(0.2)
+pyautogui.keyUp('x')
+time.sleep(0.2)
+
+# Release right key to stop movement and assess situation
+pyautogui.keyUp('right')
+
+

@@ -1,0 +1,31 @@
+[Thread 15 - LONG] Python code to be executed:
+import pyautogui
+import time
+
+# Wait a moment before starting
+time.sleep(0.5)
+
+# Mario is about to hit a question block - jump to hit it
+pyautogui.keyDown('x')
+pyautogui.keyDown('right')
+time.sleep(0.3)
+pyautogui.keyUp('x')
+pyautogui.keyUp('right')
+
+# Brief pause to see what comes out of the block
+time.sleep(0.2)
+
+# Continue moving right and prepare to jump over the question blocks on the ground
+pyautogui.keyDown('right')
+time.sleep(0.5)
+
+# Jump over the question blocks
+pyautogui.keyDown('x')
+time.sleep(0.5)
+pyautogui.keyUp('x')
+
+# Continue moving right toward the pipe
+time.sleep(0.7)
+pyautogui.keyUp('right')
+
+
