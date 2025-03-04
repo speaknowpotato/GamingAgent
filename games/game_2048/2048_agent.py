@@ -9,6 +9,10 @@ import subprocess
 import multiprocessing
 import re
 import pygetwindow as gw
+import pywinctl as pwc
+# https://github.com/Kalmat/PyWinCtl, support linux and macos
+# pip3 install pywinctl
+
 import mss
 # System prompt for LLM
 system_prompt = (  
@@ -68,16 +72,40 @@ system_prompt = (
 
 def get_pygame_window_position():
     """
-    Attempts to find the 2048 pygame window and return its position.
+    尝试找到2048 pygame窗口并返回其位置。
     """
-    windows = gw.getWindowsWithTitle("pygame")  # Adjust title if needed
-
-    if windows:
-        window = windows[0]
-        return window.left, window.top, window.width, window.height
-    else:
-        print("2048 window not found!")
-        return None
+    try:
+        # 正确使用pygetwindow API
+        # all_windows = gw.getAllWindows()
+        all_windows = pwc.getAllWindows()
+        pygame_windows = [w for w in all_windows if 'pygame' in w.title.lower()]
+        
+        if pygame_windows:
+            window = pygame_windows[0]
+            print(f"找到pygame窗口: {window.title}")
+            return window.left, window.top, window.width, window.height
+        else:
+            print("未找到pygame窗口，尝试查找其他可能的窗口名称")
+            
+            # 尝试其他可能的窗口名称
+            possible_titles = ['2048', 'game', 'python']
+            for title in possible_titles:
+                matching_windows = [w for w in all_windows if title.lower() in w.title.lower()]
+                if matching_windows:
+                    window = matching_windows[0]
+                    print(f"找到可能的游戏窗口: {window.title}")
+                    return window.left, window.top, window.width, window.height
+            
+            # 如果没有找到任何匹配窗口，使用全屏
+            print("未找到任何可能的游戏窗口，使用全屏截图")
+            screen_width, screen_height = pyautogui.size()
+            return 0, 0, screen_width, screen_height
+    
+    except Exception as e:
+        print(f"获取窗口位置时出错: {str(e)}")
+        # 出错时使用全屏
+        screen_width, screen_height = pyautogui.size()
+        return 0, 0, screen_width, screen_height
 
 def capture_screenshot():
     """
