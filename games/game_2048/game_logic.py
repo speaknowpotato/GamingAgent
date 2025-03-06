@@ -36,4 +36,4 @@ screen = pygame.display.set_mode(size)
 my_font = pygame.font.SysFont(c["font"], c["font_size"], bold=True)
 
 if __name__ == "__main__":
-    playGame("light", 2048, size)
+    playGame("light", 2048, size, use_ai=True)

@@ -8,6 +8,7 @@ from pygame.locals import *
 
 from logic import *
 import os
+from rl_agent import RLAgent
 
 # TODO: Add a RULES button on start page
 # TODO: Add score keeping
@@ -213,13 +214,14 @@ def display(board, theme, size, score):
     pygame.display.update()
 
 
-def playGame(theme, difficulty, size):
+def playGame(theme, difficulty, size, use_ai=False):
     """
     Main game loop function.
 
     Parameters:
         theme (str): game interface theme
         difficulty (int): game difficulty, i.e., max. tile to get
+        use_ai (bool): whether to use AI
     """
     # Initialise game status
     status = "PLAY"
@@ -231,6 +233,13 @@ def playGame(theme, difficulty, size):
     board = newGame(theme, text_col, size)
     display(board, theme, size, score)  # Display initial board with score
 
+    # Initialize AI agent if needed
+    ai_agent = None
+    if use_ai:
+        from rl_agent import RLAgent
+
+        ai_agent = RLAgent()
+
     # Define movement key mappings
     movement_keys = {
         pygame.K_LEFT: "a",
@@ -241,6 +250,30 @@ def playGame(theme, difficulty, size):
 
     # Main game loop
     while True:
+        # If using AI, get the AI's move
+        if use_ai and ai_agent and status == "PLAY":
+            key = ai_agent.get_move(board)
+            print(f"AI move: {key}")
+
+            # Perform move directly with the key string
+            new_board = move(key, deepcopy(board))
+
+            # Only update board if there was a change
+            if new_board != board:
+                points = get_last_score()
+                score += points
+                board = fillTwoOrFour(new_board)
+                display(board, theme, size, score)
+
+                # Update game status
+                status = checkGameStatus(board, difficulty)
+
+                # Check win/lose
+                board, status = winCheck(board, status, theme, text_col, size)
+
+            # Add a small delay to make AI moves visible
+            pygame.time.delay(200)
+
         for event in pygame.event.get():
             # Handle Quit
             if event.type == pygame.QUIT:
@@ -262,18 +295,13 @@ def playGame(theme, difficulty, size):
                     key = movement_keys[event.key]
                     print(f"Key mapped: {key}")  # Debugging output
 
-                    # Store old board to check for changes
-                    old_board = deepcopy(board)
-
                     # Perform move
                     new_board = move(key, deepcopy(board))
 
                     # Only update board if there was a change
-                    if new_board != old_board:
-                        # Get score from the move
+                    if new_board != board:
                         points = get_last_score()
                         score += points
-
                         board = fillTwoOrFour(new_board)
                         display(board, theme, size, score)
 
