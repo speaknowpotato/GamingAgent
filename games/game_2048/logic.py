@@ -1,5 +1,8 @@
 import random
 
+# Add this global variable at the top of the file
+last_score = 0
+
 
 def move(direction, board):
     """
@@ -11,6 +14,9 @@ def move(direction, board):
     Returns:
         (list): updated board after move completion
     """
+    global last_score
+    last_score = 0  # Reset score for this move
+
     if direction == "w":
         return moveUp(board)
     if direction == "s":
@@ -39,8 +45,12 @@ def checkGameStatus(board, max_tile=2048):
     for i in range(4):
         for j in range(4):
             # check if a merge is possible
-            if j != 3 and board[i][j] == board[i][j+1] or \
-                    i != 3 and board[i][j] == board[i + 1][j]:
+            if (
+                j != 3
+                and board[i][j] == board[i][j + 1]
+                or i != 3
+                and board[i][j] == board[i + 1][j]
+            ):
                 return "PLAY"
 
     if 0 not in flat_board:
@@ -62,7 +72,7 @@ def fillTwoOrFour(board, iter=1):
     for _ in range(iter):
         a = random.randint(0, 3)
         b = random.randint(0, 3)
-        while(board[a][b] != 0):
+        while board[a][b] != 0:
             a = random.randint(0, 3)
             b = random.randint(0, 3)
 
@@ -82,6 +92,7 @@ def moveLeft(board):
     Returns:
         board (list): updated game board
     """
+    global last_score
     # initial shift
     shiftLeft(board)
 
@@ -90,6 +101,7 @@ def moveLeft(board):
         for j in range(3):
             if board[i][j] == board[i][j + 1] and board[i][j] != 0:
                 board[i][j] *= 2
+                last_score += board[i][j]  # Add score when merging
                 board[i][j + 1] = 0
                 j = 0
 
@@ -107,6 +119,7 @@ def moveUp(board):
     Returns:
         board (list): updated game board
     """
+    global last_score
     board = rotateLeft(board)
     board = moveLeft(board)
     board = rotateRight(board)
@@ -122,6 +135,7 @@ def moveRight(board):
     Returns:
         board (list): updated game board
     """
+    global last_score
     # initial shift
     shiftRight(board)
 
@@ -130,6 +144,7 @@ def moveRight(board):
         for j in range(3, 0, -1):
             if board[i][j] == board[i][j - 1] and board[i][j] != 0:
                 board[i][j] *= 2
+                last_score += board[i][j]  # Add score when merging
                 board[i][j - 1] = 0
                 j = 0
 
@@ -147,6 +162,7 @@ def moveDown(board):
     Returns:
         board (list): updated game board
     """
+    global last_score
     board = rotateLeft(board)
     board = moveLeft(board)
     shiftRight(board)
@@ -215,3 +231,14 @@ def rotateRight(board):
     b = rotateLeft(board)
     b = rotateLeft(b)
     return rotateLeft(b)
+
+
+def get_last_score():
+    """
+    Get the score from the last move.
+
+    Returns:
+        (int): score from the last move
+    """
+    global last_score
+    return last_score
